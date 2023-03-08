@@ -4,17 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> 
+        #aprovado {
+            background-color: lime;
+        }
+        #reprovado {
+            background-color: red;
+        }
+    </style>
     <title>Calcular Media</title>
 </head>
 <body>
     <h1>:: Calcular Média ::</h1>
     <form action="calcMedia.php" method="get">
         Nota 1: <br>
-        <input type="text" name="nota1">
+        <input type="number" name="nota1">
         <br><br>
 
         Nota 2: <br>
-        <input type="text" name="nota2">
+        <input type="number" name="nota2">
         <br><br>
         <input type="submit" value="calcular">
     </form>
