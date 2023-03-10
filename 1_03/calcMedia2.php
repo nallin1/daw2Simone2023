@@ -35,6 +35,11 @@
 
 <?php
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $msgMedia = "";
+    $msgResultado = "";
+    $msgn1 = "";
+
     function calcMedia($n1, $n2)
     {
         $media = ($n1 + $n2) / 2;
@@ -56,6 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             echo " <span id='reprovado'> <br>Reprovado ! </span>";
         }
-    }
+    }   
 }
 ?>
