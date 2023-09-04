@@ -16,35 +16,35 @@
 
 <body>
 
-    <form>
+    <form method="POST" enctype="multipart/form-data">
         <div class="container-md">
             <br>
-            <h1>Cadastro de Planta 🍁🔥</h1>
+            <h1>Cadastro de Planta 🌷</h1>
             <br>
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome:</label>
-                <input type="text" class="form-control" id="nome" aria-describedby="nome">
+                <input type="text" class="form-control" id="nome" aria-describedby="nome" name="nome">
             </div>
             <div class="mb-3">
                 <label for="especie" class="form-label">Espécie:</label>
-                <input type="password" class="form-control" id="especie">
+                <input type="text" class="form-control" id="especie" name="especie">
             </div>
             <div class="mb-3">
                 <label for="altura" class="form-label">Altura:</label>
-                <input type="password" class="form-control" id="altura">
+                <input type="number" class="form-control" id="altura" name="altura">
             </div>
             <div class="mb-3">
                 <label for="peso" class="form-label">Peso:</label>
-                <input type="password" class="form-control" id="peso">
+                <input type="number" class="form-control" id="peso", name="peso">
             </div>
             <div class="mb-3">
                 <label for="foto" class="form-label">Foto:</label>
-                <input type="file" class="form-control" id="foto" accept="image/*">
+                <input type="file" class="form-control" id="foto" accept="image/*" name="foto">
             </div>
             <br>
             <div>
                 <label for="categoria" class="form-label">Categoria:</label>
-                <select class="form-select" aria-label="categoria">
+                <select class="form-select" aria-label="categoria" name="categoria">
                     <option selected>Categoria</option>
                     <option value="1">Suculenta</option>
                     <option value="2">Cacto</option>
@@ -53,10 +53,9 @@
                 </select>
             </div>
             <br><br>
-            <input type="submit" onclick="window.open('cadastra.php', '_top');"
+            <input type="submit"
                 style="background-color: lightgreen;padding: 15px;border:none;border-radius:10px;">
         </div>
-
     </form>
 </body>
 
@@ -64,47 +63,19 @@
 
 
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     try {
-        $cod = $_POST["cod"];
+        $nome = $_POST["nome"];
         $especie = $_POST["especie"];
         $altura = $_POST["altura"];
         $peso = $_POST["peso"];
-        $tipo_planta = $_POST["tipo_planta"];
+        $categoria = $_POST["categoria"];
         $foto = $_FILES["foto"];
 
-        include_once("conexaoBD.php");
-
-        if ((trim($cod) != "") || (trim($especie) != "")) {
-            $stmt = $pdo->prepare("select from flores * where cod = :cod");
-            $stmt->bindParam(':cod', $cod);
-            $stmt->execute();
-
-            $rows = $stmt->rowCount();
-
-            if ($rows > 0) {
-                echo "<script>alert('Código já cadastrado!');</script>";
-            } else {
-                $sql = "INSERT INTO flores (cod, especie, altura, peso, tipo_planta, foto) VALUES ('$cod', '$especie', '$altura', '$peso', '$tipo_planta', '$caminho_salvar')";
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindParam(':cod', $cod);
-                $stmt->bindParam(':especie', $especie);
-                $stmt->bindParam(':altura', $altura);
-                $stmt->bindParam(':peso', $peso);
-                $stmt->bindParam(':tipo_planta', $tipo_planta);
-                $stmt->bindParam(':foto', $caminho_salvar);
-                $stmt->execute();
-
-                echo "<script>alert('Cadastro realizado com sucesso!');</script>";
-            }
-
-        } else {
-            echo "<script>alert('Código e espécie são obrigatórios!');</script>";
-        }
-
+        require_once("functions.php");
+        cadastrarFlor($nome, $especie, $altura, $peso, $categoria, $foto);
     } catch (PDOException $e) {
-        echo "Erro ao cadastrar: " . $e->getMessage();
+        echo "Error: " . $e->getMessage();
     }
 }
-
 ?>
