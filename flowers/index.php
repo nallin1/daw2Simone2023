@@ -16,10 +16,26 @@
 
 <body>
 
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">🌷</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link active" aria-current="page" href="#">Cadastro</a>
+                    <a class="nav-link" href="consulta.php">Consulta</a>
+                    <a class="nav-link" href="#">Deletar</a>
+                </div>
+            </div>
+        </div>
+    </nav>
     <form method="POST" enctype="multipart/form-data">
         <div class="container-md">
             <br>
-            <h1>Cadastro de Planta 🌷</h1>
+            <h1>Cadastro de Flores 🌷</h1>
             <br>
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome:</label>
@@ -35,7 +51,7 @@
             </div>
             <div class="mb-3">
                 <label for="peso" class="form-label">Peso:</label>
-                <input type="number" class="form-control" id="peso", name="peso">
+                <input type="number" class="form-control" id="peso" , name="peso">
             </div>
             <div class="mb-3">
                 <label for="foto" class="form-label">Foto:</label>
@@ -53,29 +69,28 @@
                 </select>
             </div>
             <br><br>
-            <input type="submit"
-                style="background-color: lightgreen;padding: 15px;border:none;border-radius:10px;">
+            <input type="submit" style="background-color: lightgreen;padding: 15px;border:none;border-radius:10px;">
+            <br><br>
+
+            <?php
+            if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+                try {
+                    $nome = $_POST["nome"];
+                    $especie = $_POST["especie"];
+                    $altura = $_POST["altura"];
+                    $peso = $_POST["peso"];
+                    $categoria = $_POST["categoria"];
+                    $foto = $_FILES["foto"];
+
+                    require_once("functions.php");
+                    cadastrarFlor($nome, $especie, $altura, $peso, $categoria, $foto);
+                } catch (PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+            ?>
         </div>
     </form>
 </body>
 
 </html>
-
-
-<?php
-if ($_SERVER["REQUEST_METHOD"] === 'POST') {
-    try {
-        $nome = $_POST["nome"];
-        $especie = $_POST["especie"];
-        $altura = $_POST["altura"];
-        $peso = $_POST["peso"];
-        $categoria = $_POST["categoria"];
-        $foto = $_FILES["foto"];
-
-        require_once("functions.php");
-        cadastrarFlor($nome, $especie, $altura, $peso, $categoria, $foto);
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-    }
-}
-?>
