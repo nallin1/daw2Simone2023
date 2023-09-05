@@ -36,29 +36,26 @@
         <div class="container-md">
             <h1>Consulta 🌼</h1>
             <br><br>
-            <div class="input-group mb-3">
-                <input class="btn btn-outline-secondary" type="submit" id="button-addon1" value="Consultar">
-                <input type="text" class="form-control" placeholder="Espécie da flor" aria-label="Example text with button addon"
-                    aria-describedby="button-addon1" name="especie">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Espécie da flor"
+                    name="especie">
+                <br>
+                <button class="btn btn-primary" type="submit">Consultar</button>
             </div>
             <br><br>
-            
+            <?php
+            if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+                try {
+                    $especie = $_POST["especie"];
+                    include_once("functions.php");
+                    consultarFlores($especie);
+                } catch (PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+            ?>
         </div>
     </form>
 </body>
 
 </html>
-
-<?php 
-if ($_SERVER["REQUEST_METHOD"] === 'POST') {
-    try {
-        $especie = $_POST["especie"];
-        if (trim($especie) != "") {
-            include_once("functions.php");
-            consultarFlores($especie);
-        }
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-    }
-}
-?>

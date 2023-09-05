@@ -62,12 +62,13 @@ function cadastrarFlor($nome, $especie, $altura, $peso, $categoria, $foto)
             echo "<div class='alert alert-danger' role='alert'>Erro ao enviar imagem ! ❌</div>";
         }
     }
+    $pdo = null;
 }
 
 function consultarFlores($especie) {
     include("conexaoBD.php");
 
-    if (isset($_POST["especie"]) && $_POST["especie"] != "") {
+    if ($_POST["especie"] != "") {
         $stmt = $pdo->prepare("select * from flores where especie= :especie order by nome");
         $stmt->bindParam(':especie', $especie);
     } else {
@@ -76,8 +77,33 @@ function consultarFlores($especie) {
 
     try {
         $stmt->execute();
-
         
+        echo "<table class='table table-bordered'>";
+        echo "<tr class='table table-bordered'>";
+        echo "<th class='table table-bordered'>Nome</th>";
+        echo "<th class='table table-bordered'>Espécie</th>";
+        echo "<th class='table table-bordered'>Altura</th>";
+        echo "<th class='table table-bordered'>Peso</th>";
+        echo "<th class='table table-bordered'>Categoria</th>";
+        echo "<th class='table table-bordered'>Foto</th>";
+        echo "</tr>";
+
+
+        while ($linha = $stmt->fetch()) {
+            echo "<tr class='table table-bordered'>";
+            echo "<td class='table table-bordered'>" . $linha["nome"] . "</td>";
+            echo "<td class='table table-bordered'>" . $linha["especie"] . "</td>";
+            echo "<td class='table table-bordered'>" . $linha["altura"] . "</td>";
+            echo "<td class='table table-bordered'>" . $linha["peso"] . "</td>";
+            echo "<td class='table table-bordered'>" . $linha["categoria"] . "</td>";
+            echo "<td class='table table-bordered'><img src='img/" . $linha["foto"] . "' width='100px' height='100px'></td>";
+            echo "</tr>";
+        }
+
+        echo "</table>";
+    } catch (PDOException $e) {
+        die("Erro: " . $e->getMessage());
     }
+    $pdo = null;
 }
 ?>
