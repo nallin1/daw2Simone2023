@@ -65,7 +65,8 @@ function cadastrarFlor($nome, $especie, $altura, $peso, $categoria, $foto)
     $pdo = null;
 }
 
-function consultarFlores($especie) {
+function consultarFlores($especie)
+{
     include("conexaoBD.php");
 
     if ($_POST["especie"] != "") {
@@ -77,7 +78,7 @@ function consultarFlores($especie) {
 
     try {
         $stmt->execute();
-        
+        echo "<form method='post'>";
         echo "<table class='table table-bordered'>";
         echo "<tr class='table table-bordered'>";
         echo "<th class='table table-bordered'>Nome</th>";
@@ -88,21 +89,57 @@ function consultarFlores($especie) {
         echo "<th class='table table-bordered'>Foto</th>";
         echo "</tr>";
 
+        if ($stmt->rowCount() == 0) {
+            echo "<div class='alert alert-danger' role='alert'>Não foi possível encontrar uma flor! ❌</div>";
+        } else {
+            
+            while ($linha = $stmt->fetch()) {
+                $idFlor = $linha["id"];
+                echo "<tr class='table table-bordered'>";
+                echo "<td class='table table-bordered'>
+                <input class='form-check-input' type='checkbox' value='" . $idFlor ."' id='flexCheckDefault'>" . $linha["nome"] . "</td>";
+                echo "<td class='table table-bordered'>" . $linha["especie"] . "</td>";
+                echo "<td class='table table-bordered'>" . $linha["altura"] . "</td>";
+                echo "<td class='table table-bordered'>" . $linha["peso"] . "</td>";
+                echo "<td class='table table-bordered'>" . $linha["categoria"] . "</td>";
+                echo "<td class='table table-bordered'><img src='img/" . $linha["foto"] . "' width='100px' height='100px'></td>";
+                echo "</tr>";
+            }
 
-        while ($linha = $stmt->fetch()) {
-            echo "<tr class='table table-bordered'>";
-            echo "<td class='table table-bordered'>" . $linha["nome"] . "</td>";
-            echo "<td class='table table-bordered'>" . $linha["especie"] . "</td>";
-            echo "<td class='table table-bordered'>" . $linha["altura"] . "</td>";
-            echo "<td class='table table-bordered'>" . $linha["peso"] . "</td>";
-            echo "<td class='table table-bordered'>" . $linha["categoria"] . "</td>";
-            echo "<td class='table table-bordered'><img src='img/" . $linha["foto"] . "' width='100px' height='100px'></td>";
-            echo "</tr>";
+            echo "</table>";
+            echo "<br><br>";
+            echo "<input type='submit' class='btn btn-danger' value='Deletar'>";
+            if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+                deletarFlor($idFlor);
+            }
+            echo "</form>";
         }
 
-        echo "</table>";
     } catch (PDOException $e) {
+        echo "<div class='alert alert-danger' role='alert'>Não foi possível encontrar uma flor! ❌</div>";
         die("Erro: " . $e->getMessage());
+    }
+    $pdo = null;
+}
+
+function deletarFlor($id)
+{
+    include("conexaoBD.php");
+
+    $stmt = $pdo->prepare("select * from flores where id = :id");
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    $rows = $stmt->rowCount();
+
+    if ($rows <= 0) {
+        echo "<div class='alert alert-danger' role='alert'>Erro ao deletar flor ! ❌</div>";
+    } else {
+        $stmt = $pdo->prepare("delete from flores where id = :id");
+        $stmt->bindValue(':id', $id);
+        $stmt->execute();
+
+        echo "<div class='alert alert-success' role='alert'>Flor deletada com sucesso ! 💚</div>";
     }
     $pdo = null;
 }
