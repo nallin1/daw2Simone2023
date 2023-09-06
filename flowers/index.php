@@ -27,7 +27,7 @@
                 <div class="navbar-nav">
                     <a class="nav-link active" aria-current="page" href="#">Cadastro</a>
                     <a class="nav-link" href="consulta.php">Consulta</a>
-                    <a class="nav-link" href="#">Deletar</a>
+                    <a class="nav-link" href="alterar.php">Alterar</a>
                 </div>
             </div>
         </div>

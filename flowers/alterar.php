@@ -25,38 +25,13 @@
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a class="nav-link" href="index.php">Cadastro</a>
-                    <a class="nav-link active" href="#" aria-current="page">Consulta</a>
-                    <a class="nav-link" href="alterar.php">Alterar</a>
+                    <a class="nav-link" href="consulta.php" aria-current="page">Consulta</a>
+                    <a class="nav-link active" href="#">Alterar</a>
                 </div>
             </div>
         </div>
     </nav>
 
-    <form method="POST" enctype="multipart/form-data">
-        <br><br>
-        <div class="container-md">
-            <h1>Consulta 🌼</h1>
-            <br><br>
-            <div class="mb-3">
-                <input type="text" class="form-control" id="formGroupExampleInput" placeholder="Espécie da flor"
-                    name="especie">
-                <br>
-                <button class="btn btn-primary" type="submit">Consultar</button>
-            </div>
-            <br><br>
-            <?php
-            if ($_SERVER["REQUEST_METHOD"] === 'POST') {
-                try {
-                    $especie = $_POST["especie"];
-                    include_once("functions.php");
-                    consultarFlores($especie);
-                } catch (PDOException $e) {
-                    echo "Error: " . $e->getMessage();
-                }
-            }
-            ?>
-        </div>
-    </form>
 </body>
 
 </html>
