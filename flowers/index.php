@@ -47,11 +47,11 @@
             </div>
             <div class="mb-3">
                 <label for="altura" class="form-label">Altura:</label>
-                <input type="number" class="form-control" id="altura" name="altura">
+                <input type="number" step="0.1" min="0.1" class="form-control" id="altura" name="altura">
             </div>
             <div class="mb-3">
                 <label for="peso" class="form-label">Peso:</label>
-                <input type="number" class="form-control" id="peso" , name="peso">
+                <input type="number" step="0.1" min="0.1" class="form-control" id="peso" , name="peso">
             </div>
             <div class="mb-3">
                 <label for="foto" class="form-label">Foto:</label>
