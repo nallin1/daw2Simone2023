@@ -32,6 +32,56 @@
         </div>
     </nav>
 
+    <form method="POST" enctype="multipart/form-data">
+        <div class="container-md">
+            <br>
+            <h1>Cadastro de Flores 🌷</h1>
+            <br>
+            <div class="mb-3">
+                <label for="nome" class="form-label">Nome da flor que será alterada:</label>
+                <input type="text" class="form-control" id="nome" aria-describedby="nome" name="nome">
+            </div>
+            <div class="mb-3">
+                <label for="especie" class="form-label">Espécie:</label>
+                <input type="text" class="form-control" id="especie" name="especie">
+            </div>
+            <div class="mb-3">
+                <label for="altura" class="form-label">Altura:</label>
+                <input type="number" step="0.1" min="0.1" class="form-control" id="altura" name="altura">
+            </div>
+            <div class="mb-3">
+                <label for="peso" class="form-label">Peso:</label>
+                <input type="number" step="0.1" min="0.1" class="form-control" id="peso" , name="peso">
+            </div>
+            <!-- botão para enviar -->
+            <button type="submit" class="btn btn-warning">Alterar</button>
+
+            <?php
+            if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+                try {
+                    include_once("functions.php");
+
+                    $nome = $_POST['nome'];
+                    $especie = $_POST['especie'];
+                    $altura = $_POST['altura'];
+                    $peso = $_POST['peso'];
+
+                    $flor = selectFlorNome($nome);
+
+                    if ($flor == null) {
+                        echo "<br><br><div class='alert alert-danger' role='alert'>Flor não encontrada!</div>";
+                        exit();
+                    } else {
+                        alterarFlor($flor);
+                        echo "<br><br><div class='alert alert-success' role='alert'>Flor alterada com sucesso!</div>";
+                    }
+                } catch (PDOException $e) {
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+            ?>
+        </div>
+    </form>
 </body>
 
 </html>
