@@ -1,6 +1,43 @@
 <?php
+function selectFlor($id)
+{
+    include("conexaoBD.php");
+
+    $stmt = $pdo->prepare("select * from flores where id = :id");
+    $stmt->bindValue(':id', $id);
+    $stmt->execute();
+
+    $rows = $stmt->rowCount();
+
+    if ($rows > 0) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    } else {
+        return false;
+    }
+}
+
+function selectFlorNome($nome)
+{
+    include("conexaoBD.php");
+
+    $stmt = $pdo->prepare("select * from flores where nome = :nome");
+    $stmt->bindValue(':nome', $nome);
+    $stmt->execute();
+
+    $rows = $stmt->rowCount();
+
+    if ($rows > 0) {
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    } else {
+        return false;
+    }
+}
+
 function cadastrarFlor($nome, $especie, $altura, $peso, $categoria, $foto)
 {
+    session_start();
     include("conexaoBD.php");
 
     // Constante para o tam máximo de arquivo de foto
@@ -79,6 +116,7 @@ function consultarFlores($especie)
 
     try {
         $stmt->execute();
+        $acao = false;
         echo "<form method='post'>";
         echo "<table class='table table-bordered'>";
         echo "<tr class='table table-bordered'>";
@@ -97,7 +135,7 @@ function consultarFlores($especie)
             while ($linha = $stmt->fetch()) {
                 $idFlor = $linha["id"];
                 echo "<tr class='table table-bordered'>";
-                echo "<td class='table table-bordered'> <span style='padding:10px;'>" . $linha["nome"] . "</span><button type='submit' class='btn btn-danger' name='acao' value='deletar'>Excluir Flor</button></td>";
+                echo "<td class='table table-bordered'> <span style='padding:10px;'>" . $linha["nome"] . "</span><button type='submit' class='btn btn-danger' name='acaoDeletar' value='" . $idFlor . "'>Excluir Flor</button><button type='submit' class='btn btn-warning' name='acaoAlterar' value='" . $idFlor . "' style='margin:10px'>Alterar Dados</button></td>";
                 echo "<td class='table table-bordered'>" . $linha["especie"] . "</td>";
                 echo "<td class='table table-bordered'>" . $linha["altura"] . "</td>";
                 echo "<td class='table table-bordered'>" . $linha["peso"] . "</td>";
@@ -108,6 +146,22 @@ function consultarFlores($especie)
 
             echo "</table>";
             echo "<br><br>";
+            if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+                if (isset($_POST["acaoDeletar"]) && !$acao) {
+                    $acao = true;
+                    deletarFlor($_POST["acaoDeletar"]);
+                } else if (isset($_POST["acaoAlterar"]) && !$acao) {
+                    $acao = true;
+                    $florAlterar = selectFlor($_POST["acaoAlterar"]);
+                    $_POST["florAlterarid"] = $florAlterar["id"];
+                    $_POST["florAlterarnome"] = $florAlterar["nome"];
+                    $_POST["florAlterarespecie"] = $florAlterar["especie"];
+                    $_POST["florAlteraraltura"] = $florAlterar["altura"];
+                    $_POST["florAlterarpeso"] = $florAlterar["peso"];
+
+                    header("Location: alterar.php");
+                }
+            }
             echo "</form>";
         }
 
@@ -122,21 +176,43 @@ function deletarFlor($id)
 {
     include("conexaoBD.php");
 
-    $stmt = $pdo->prepare("select * from flores where id = :id");
+    // selecionar nome da foto na coluna foto cujo id é igual ao id da flor
+    $stmt = $pdo->prepare("select foto from flores where id = :id");
+    $stmt->bindValue(':id', $id);
+    $nomeFoto = $stmt->execute();
+    $row = $stmt->fetch();
+    $arquivoFoto = $row["foto"];
+
+    unlink("img/" . $arquivoFoto);
+
+    // deletar flor do banco de dados
+    $stmt = $pdo->prepare("delete from flores where id = :id");
     $stmt->bindValue(':id', $id);
     $stmt->execute();
 
-    $rows = $stmt->rowCount();
+    echo "<div class='alert alert-success' role='alert'>Flor deletada com sucesso ! 💚</div>";
 
-    if ($rows <= 0) {
-        echo "<div class='alert alert-danger' role='alert'>Erro ao deletar flor ! ❌</div>";
-    } else {
-        $stmt = $pdo->prepare("delete from flores where id = :id");
-        $stmt->bindValue(':id', $id);
-        $stmt->execute();
-
-        echo "<div class='alert alert-success' role='alert'>Flor deletada com sucesso ! 💚</div>";
-    }
     $pdo = null;
+}
+
+function alterarFlor($flor)
+{
+    $id = $flor["id"];
+    $nome = $flor["nome"];
+    $especie = $flor["especie"];
+    $peso = $flor["peso"];
+    $altura = $flor["altura"];
+
+    include("conexaoBD.php");
+
+    $stmt = $pdo->prepare("update flores set nome = :nome, especie = :especie, peso = :peso, altura = :altura where id = :id");
+    $stmt->bindValue(':id', $id);
+    $stmt->bindValue(':nome', $nome);
+    $stmt->bindValue(':especie', $especie);
+    $stmt->bindValue(':peso', $peso);
+    $stmt->bindValue(':altura', $altura);
+    $stmt->execute();
+
+    echo "<div class='alert alert-success' role='alert'>Flor alterada com sucesso ! 💚</div>";
 }
 ?>
