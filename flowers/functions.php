@@ -21,14 +21,14 @@ function selectFlorNome($nome)
 {
     include("conexaoBD.php");
 
-    $stmt = $pdo->prepare("select * from flores where nome = :nome");
+    $stmt = $pdo->prepare("select * from flores where nome like :nome");
     $stmt->bindValue(':nome', $nome);
     $stmt->execute();
 
     $rows = $stmt->rowCount();
 
     if ($rows > 0) {
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->fetch();
         return $result;
     } else {
         return false;
@@ -194,25 +194,26 @@ function deletarFlor($id)
 
     $pdo = null;
 }
-
 function alterarFlor($flor)
 {
-    $id = $flor["id"];
-    $nome = $flor["nome"];
-    $especie = $flor["especie"];
-    $peso = $flor["peso"];
-    $altura = $flor["altura"];
+    try {
 
-    include("conexaoBD.php");
+        include("conexaoBD.php");
 
-    $stmt = $pdo->prepare("update flores set nome = :nome, especie = :especie, peso = :peso, altura = :altura where id = :id");
-    $stmt->bindValue(':id', $id);
-    $stmt->bindValue(':nome', $nome);
-    $stmt->bindValue(':especie', $especie);
-    $stmt->bindValue(':peso', $peso);
-    $stmt->bindValue(':altura', $altura);
-    $stmt->execute();
+        $stmt = $pdo->prepare("update flores set especie = :especie, peso = :peso, altura = :altura where nome like :nome");
+        $stmt->bindValue(':nome', $flor['nome']);
+        $stmt->bindValue(':especie', $flor['especie']);
+        $stmt->bindValue(':peso', $flor['peso']);
+        $stmt->bindValue(':altura', $flor['altura']);
+        $stmt->execute();
+        // Adicione aqui qualquer código adicional que você deseja executar após a atualização bem-sucedida.
 
-    echo "<div class='alert alert-success' role='alert'>Flor alterada com sucesso ! 💚</div>";
+    } catch (PDOException $e) {
+        // Captura e trata exceções PDO, se ocorrerem.
+        // Aqui você pode fazer o tratamento apropriado, como registrar o erro ou fornecer uma mensagem de erro amigável.
+        echo "Erro ao atualizar a flor: " . $e->getMessage();
+    } catch (Exception $e) {
+        // Captura e trata exceções genéricas, caso ocorram.
+        echo "Erro genérico ao atualizar a flor: " . $e->getMessage();
+    }
 }
-?>

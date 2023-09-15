@@ -32,7 +32,7 @@
             </div>
         </div>
     </nav>
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" autocomplete="off">
         <div class="container-md">
             <br>
             <h1>Cadastro de Flores 🌷</h1>

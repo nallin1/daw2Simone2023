@@ -32,26 +32,26 @@
         </div>
     </nav>
 
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" autocomplete="off">
         <div class="container-md">
             <br>
             <h1>Cadastro de Flores 🌷</h1>
             <br>
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome da flor que será alterada:</label>
-                <input type="text" class="form-control" id="nome" aria-describedby="nome" name="nome">
+                <input type="text" class="form-control" id="nome" aria-describedby="nome" name="nome" required>
             </div>
             <div class="mb-3">
                 <label for="especie" class="form-label">Espécie:</label>
-                <input type="text" class="form-control" id="especie" name="especie">
+                <input type="text" class="form-control" id="especie" name="especie" required>
             </div>
             <div class="mb-3">
                 <label for="altura" class="form-label">Altura:</label>
-                <input type="number" step="0.1" min="0.1" class="form-control" id="altura" name="altura">
+                <input type="number" step="0.1" min="0.1" class="form-control" id="altura" name="altura" required>
             </div>
             <div class="mb-3">
                 <label for="peso" class="form-label">Peso:</label>
-                <input type="number" step="0.1" min="0.1" class="form-control" id="peso" , name="peso">
+                <input type="number" step="0.1" min="0.1" class="form-control" id="peso" , name="peso" required>
             </div>
             <!-- botão para enviar -->
             <button type="submit" class="btn btn-warning">Alterar</button>
@@ -59,25 +59,21 @@
             <?php
             if ($_SERVER["REQUEST_METHOD"] === 'POST') {
                 try {
-                    include_once("functions.php");
+                    include("conexaoBD.php");
 
-                    $nome = $_POST['nome'];
-                    $especie = $_POST['especie'];
-                    $altura = $_POST['altura'];
-                    $peso = $_POST['peso'];
+                    $stmt = $pdo->prepare("update flores set especie=:especie, altura=:altura, peso=:peso where nome=:nome");
+                    $stmt->bindParam(':nome', $_POST["nome"]);
+                    $stmt->bindParam(':especie', $_POST["especie"]);
+                    $stmt->bindParam(':altura', $_POST["altura"]);
+                    $stmt->bindParam(':peso', $_POST["peso"]);
 
-                    $flor = selectFlorNome($nome);
+                    $stmt->execute();
 
-                    if ($flor == null) {
-                        echo "<br><br><div class='alert alert-danger' role='alert'>Flor não encontrada!</div>";
-                        exit();
-                    } else {
-                        alterarFlor($flor);
-                        echo "<br><br><div class='alert alert-success' role='alert'>Flor alterada com sucesso!</div>";
-                    }
+                    echo "<div class='alert alert-success' role='alert'>Flor alterada com sucesso! ✅</div>";
                 } catch (PDOException $e) {
-                    echo "Error: " . $e->getMessage();
+                    echo "<div class='alert alert-danger' role='alert'>Erro ao alterar flor! ❌</div>";
                 }
+                
             }
             ?>
         </div>
