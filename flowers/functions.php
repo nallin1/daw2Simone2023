@@ -84,14 +84,14 @@ function cadastrarFlor($nome, $especie, $altura, $peso, $categoria, $foto)
 
 
                     echo "<div class='alert alert-success' role='alert'>Flor cadastrada com sucesso ! 💚</div>";
-
+                    echo "<div class='alert alert-success' role='alert'>Imagem enviada com sucesso ! 💚</div>";
                     if (!$stmt) {
                         die('Erro ao cadastrar flor');
                     }
                 } else {
                     echo "<div class='alert alert-danger' role='alert'>Erro ao cadastrar flor ! ❌</div>";
                 }
-                echo "<div class='alert alert-success' role='alert'>Imagem enviada com sucesso ! 💚</div>";
+
             } else {
                 echo "<div class='alert alert-danger' role='alert'>Erro ao enviar imagem ! ❌</div>";
             }
