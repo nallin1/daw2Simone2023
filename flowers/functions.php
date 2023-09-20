@@ -174,6 +174,7 @@ function consultarFlores($especie)
 
 function deletarFlor($id)
 {
+    //error_reporting(0);
     include("conexaoBD.php");
 
     // selecionar nome da foto na coluna foto cujo id é igual ao id da flor
@@ -183,7 +184,7 @@ function deletarFlor($id)
     $row = $stmt->fetch();
     $arquivoFoto = $row["foto"];
 
-    unlink("img/" . $arquivoFoto);
+    unlink("./img/" . $arquivoFoto);
 
     // deletar flor do banco de dados
     $stmt = $pdo->prepare("delete from flores where id = :id");
@@ -194,26 +195,60 @@ function deletarFlor($id)
 
     $pdo = null;
 }
-function alterarFlor($flor)
+function alterarFlor($nome, $especie, $peso, $altura, $novaFoto)
 {
     try {
 
         include("conexaoBD.php");
 
+        define('TAMANHO_MAXIMO', (2 * 1024 * 1024));
+        $uploaddir = './img/';
+        $nomeFoto = $novaFoto["name"];
+        $tipoFoto = $novaFoto["type"];
+        $tamanhoFoto = $novaFoto["size"];
+
+        //gerando novo nome para a foto
+        $info = new SplFileInfo($nomeFoto);
+        $extensaoArq = $info->getExtension();
+        $nomeFoto = $nomeFoto . "." . $extensaoArq;
+        /*
         $stmt = $pdo->prepare("update flores set especie = :especie, peso = :peso, altura = :altura where nome like :nome");
-        $stmt->bindValue(':nome', $flor['nome']);
-        $stmt->bindValue(':especie', $flor['especie']);
-        $stmt->bindValue(':peso', $flor['peso']);
-        $stmt->bindValue(':altura', $flor['altura']);
+        $stmt->bindValue(':nome', $nome);
+        $stmt->bindValue(':especie', $especie);
+        $stmt->bindValue(':peso', $peso);
+        $stmt->bindValue(':altura', $altura);
         $stmt->execute();
+        */
+
+        if (($nomeFoto != "") && (!preg_match('/^image\/(jpeg|png|gif)$/', $tipoFoto))) {
+            echo "<span id='error'>Isso não é uma imagem válida</span>";
+
+        } else if (($nomeFoto != "") && ($tamanhoFoto > TAMANHO_MAXIMO)) { //validação tamanho arquivo
+            echo "<span id='error'>A imagem deve possuir no máximo 2 MB</span>";
+        } else if (($nomeFoto != "") && (move_uploaded_file($_FILES['foto']['tmp_name'], $uploaddir . $nomeFoto))) {
+            $uploadfile = $uploaddir . $nomeFoto; // caminho/nome da imagem
+
+            //só altera a foto se for feito um novo upload
+            $stmt = $pdo->prepare("update flores set especie = :especie, peso = :peso, altura = :altura, foto = :foto where nome like :nome");
+            $stmt->bindValue(':nome', $nome);
+            $stmt->bindValue(':especie', $especie);
+            $stmt->bindValue(':peso', $peso);
+            $stmt->bindValue(':altura', $altura);
+            $stmt->bindValue(':foto', $nomeFoto);
+            $stmt->execute();
+
+        } else {
+            //senão mantem a foto anterior, não fazendo update do campo arquivoFoto
+            $stmt = $pdo->prepare("update flores set especie = :especie, peso = :peso, altura = :altura where nome like :nome");
+            $stmt->bindValue(':nome', $nome);
+            $stmt->bindValue(':especie', $especie);
+            $stmt->bindValue(':peso', $peso);
+            $stmt->bindValue(':altura', $altura);
+            $stmt->execute();
+        }
         // Adicione aqui qualquer código adicional que você deseja executar após a atualização bem-sucedida.
 
-    } catch (PDOException $e) {
-        // Captura e trata exceções PDO, se ocorrerem.
-        // Aqui você pode fazer o tratamento apropriado, como registrar o erro ou fornecer uma mensagem de erro amigável.
-        echo "Erro ao atualizar a flor: " . $e->getMessage();
     } catch (Exception $e) {
-        // Captura e trata exceções genéricas, caso ocorram.
         echo "Erro genérico ao atualizar a flor: " . $e->getMessage();
     }
 }

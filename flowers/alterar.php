@@ -53,27 +53,24 @@
                 <label for="peso" class="form-label">Peso:</label>
                 <input type="number" step="0.1" min="0.1" class="form-control" id="peso" , name="peso" required>
             </div>
+            <div class="mb-3">
+                <label for="foto" class="form-label">Nova Foto:</label>
+                <input type="file" class="form-control" id="foto" accept="image/*" name="foto">
+            </div>
             <!-- botão para enviar -->
             <button type="submit" class="btn btn-warning">Alterar</button>
 
             <?php
             if ($_SERVER["REQUEST_METHOD"] === 'POST') {
                 try {
-                    include("conexaoBD.php");
+                    include_once("functions.php");
 
-                    $stmt = $pdo->prepare("update flores set especie=:especie, altura=:altura, peso=:peso where nome=:nome");
-                    $stmt->bindParam(':nome', $_POST["nome"]);
-                    $stmt->bindParam(':especie', $_POST["especie"]);
-                    $stmt->bindParam(':altura', $_POST["altura"]);
-                    $stmt->bindParam(':peso', $_POST["peso"]);
-
-                    $stmt->execute();
-
+                    alterarFlor($_POST["nome"], $_POST["especie"], $_POST["altura"], $_POST["peso"], $_FILES["foto"]);
                     echo "<div class='alert alert-success' role='alert'>Flor alterada com sucesso! ✅</div>";
                 } catch (PDOException $e) {
                     echo "<div class='alert alert-danger' role='alert'>Erro ao alterar flor! ❌</div>";
                 }
-                
+
             }
             ?>
         </div>
